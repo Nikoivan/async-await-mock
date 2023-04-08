@@ -1,27 +1,23 @@
-import GameSaving from "./gamesaving";
-import json from "./parser";
-import read from "./reader";
+import GameSaving from './gamesaving';
+import json from './parser';
+import read from './reader';
 
 class GameSavingLoader {
   constructor() {
     this.read = read();
   }
 
-  load() {
-    return this.read
-      .then((response) => json(response))
-      .then((parseResponse) => {
-        const result = JSON.parse(parseResponse);
-        const gameSavingResult = new GameSaving(result);
-        return gameSavingResult;
-      })
-      .catch((rejected) => {
-        console.error(rejected);
-      });
+  async load() {
+    try {
+      const buffer = await this.read;
+      const arr = await json(buffer);
+      const result = JSON.parse(arr);
+      const gameSavingResult = new GameSaving(result);
+      return gameSavingResult;
+    } catch (e) {
+      throw new Error('Ошибка');
+    }
   }
 }
 
 export default GameSavingLoader;
-
-const test = new GameSavingLoader();
-test.load();
